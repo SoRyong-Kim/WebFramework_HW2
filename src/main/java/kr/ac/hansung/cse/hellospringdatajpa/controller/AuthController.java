@@ -70,4 +70,16 @@ public class AuthController {
             return "auth/register";
         }
     }
+
+    // 로그아웃 처리 (POST 방식)
+    @PostMapping("/logout")
+    public String logout() {
+        return "redirect:/login?logout=true";
+    }
+
+    // 로그아웃 처리 (GET 방식 - 링크 클릭용)
+    @GetMapping("/logout")
+    public String logoutGet() {
+        return "redirect:/login?logout=true";
+    }
 }

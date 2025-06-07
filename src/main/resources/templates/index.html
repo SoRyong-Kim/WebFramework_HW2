@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:insert="~{common :: commonHead}">
   <title>Product Manager</title>
@@ -8,8 +9,40 @@
 
 <body>
 <div class="container">
-  <h1 class="mt-5">Product List</h1>
-  <a class="btn btn-primary mb-3" th:href="@{/products/new}">Create New Product</a>
+  <!-- 상단 네비게이션 -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Product Manager</a>
+
+      <div class="navbar-nav ms-auto">
+        <div sec:authorize="isAuthenticated()">
+          <span class="navbar-text me-3">
+            안녕하세요, <span sec:authentication="name"></span>님
+            <span sec:authorize="hasRole('ADMIN')" class="badge bg-danger ms-1">관리자</span>
+          </span>
+          <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">로그아웃</button>
+          </form>
+        </div>
+        <div sec:authorize="!isAuthenticated()">
+          <a class="btn btn-outline-primary btn-sm me-2" th:href="@{/login}">로그인</a>
+          <a class="btn btn-primary btn-sm" th:href="@{/register}">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="mt-3">Product List</h1>
+
+  <!-- 관리자만 상품 생성 버튼 표시 -->
+  <div sec:authorize="hasRole('ADMIN')">
+    <a class="btn btn-primary mb-3" th:href="@{/products/new}">Create New Product</a>
+  </div>
+
+  <!-- 일반 사용자에게는 안내 메시지 -->
+  <div sec:authorize="hasRole('USER') and !hasRole('ADMIN')" class="alert alert-info">
+    <i class="fas fa-info-circle"></i> 상품 목록을 조회할 수 있습니다. 상품 관리는 관리자만 가능합니다.
+  </div>
 
   <table class="table table-bordered">
     <thead>
@@ -19,7 +52,7 @@
       <th>Brand</th>
       <th>Made In</th>
       <th>Price</th>
-      <th>Actions</th>
+      <th sec:authorize="hasRole('ADMIN')">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -28,14 +61,23 @@
       <td th:text="${product.name}">Name</td>
       <td th:text="${product.brand}">Brand</td>
       <td th:text="${product.madeIn}">Made in</td>
-      <td th:text="${product.price}">Price</td>
-      <td>
+      <td th:text="${#numbers.formatCurrency(product.price)}">Price</td>
+      <td sec:authorize="hasRole('ADMIN')">
         <a class="btn btn-primary btn-sm" th:href="@{'/products/edit/' + ${product.id}}">Edit</a>
-        <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}">Delete</a>
+        <a class="btn btn-danger btn-sm" th:href="@{'/products/delete/' + ${product.id}}"
+           onclick="return confirm('정말 삭제하시겠습니까?')">Delete</a>
       </td>
     </tr>
     </tbody>
   </table>
+
+  <!-- 관리자 페이지 링크 -->
+  <div sec:authorize="hasRole('ADMIN')" class="mt-4">
+    <hr>
+    <h5>관리자 메뉴</h5>
+    <a class="btn btn-success me-2" th:href="@{/admin}">관리자 대시보드</a>
+    <a class="btn btn-info" th:href="@{/admin/users}">사용자 관리</a>
+  </div>
 </div>
 
 <!-- Bootstrap JS fragment 삽입 -->

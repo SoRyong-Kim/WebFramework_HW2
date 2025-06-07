@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:insert="~{common :: commonHead}">
+  <title>관리자 대시보드</title>
+</head>
+
+<body>
+<div class="container">
+  <!-- 상단 네비게이션 -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><i class="fas fa-shield-alt"></i> 관리자 대시보드</a>
+
+      <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <span sec:authentication="name"></span>님 (관리자)
+                </span>
+        <a class="btn btn-outline-light btn-sm me-2" th:href="@{/products}">상품 관리</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+          <button type="submit" class="btn btn-outline-light btn-sm">로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="mb-4"><i class="fas fa-tachometer-alt"></i> 관리자 대시보드</h1>
+
+  <!-- 통계 카드들 -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-primary">
+        <div class="card-header">
+          <h5 class="card-title"><i class="fas fa-users"></i> 전체 사용자</h5>
+        </div>
+        <div class="card-body">
+          <h2 class="card-text" th:text="${totalUsers}">0</h2>
+          <p class="card-text">등록된 전체 사용자 수</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card text-white bg-danger">
+        <div class="card-header">
+          <h5 class="card-title"><i class="fas fa-user-shield"></i> 관리자</h5>
+        </div>
+        <div class="card-body">
+          <h2 class="card-text" th:text="${adminUsers}">0</h2>
+          <p class="card-text">관리자 권한을 가진 사용자</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card text-white bg-success">
+        <div class="card-header">
+          <h5 class="card-title"><i class="fas fa-user"></i> 일반 사용자</h5>
+        </div>
+        <div class="card-body">
+          <h2 class="card-text" th:text="${regularUsers}">0</h2>
+          <p class="card-text">일반 사용자 권한만 가진 사용자</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관리 메뉴 -->
+  <div class="row">
+    <div class="col-md-12">
+      <h3 class="mb-3">관리 메뉴</h3>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-users-cog"></i> 사용자 관리</h5>
+              <p class="card-text">등록된 사용자 목록을 확인하고 관리자 권한을 부여할 수 있습니다.</p>
+              <a class="btn btn-primary" th:href="@{/admin/users}">사용자 관리</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fas fa-box"></i> 상품 관리</h5>
+              <p class="card-text">상품을 등록, 수정, 삭제할 수 있습니다.</p>
+              <a class="btn btn-success" th:href="@{/products}">상품 관리</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최근 활동 (향후 확장 가능) -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h3 class="mb-3">시스템 정보</h3>
+      <div class="card">
+        <div class="card-body">
+          <p><strong>현재 시간:</strong> <span id="currentTime"></span></p>
+          <p><strong>시스템 상태:</strong> <span class="badge bg-success">정상 운영</span></p>
+          <p><strong>Spring Security:</strong> <span class="badge bg-info">활성화</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<div th:insert="~{common :: commonScript}"></div>
+
+<script>
+  // 현재 시간 표시
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('currentTime').textContent = now.toLocaleString('ko-KR');
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+</script>
+</body>
+</html>
